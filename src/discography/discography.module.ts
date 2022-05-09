@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { DiscographyService } from './discography.service';
-import { DiscographyController } from './discography.controller';
+import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { LoggerModule } from '../logger/logger.module';
-import { ConfigModule } from '@nestjs/config';
+import { DiscographyController } from './discography.controller';
+import { DiscographyService } from './discography.service';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       load: [configuration],
     }),
   ],
-  providers: [DiscographyService],
   controllers: [DiscographyController],
+  providers: [DiscographyService],
 })
 export class DiscographyModule {}
