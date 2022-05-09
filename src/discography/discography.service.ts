@@ -1,11 +1,12 @@
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { LoggerService } from '../logger/logger.service';
 import { Firestore } from '@google-cloud/firestore';
 
 @Injectable()
 export class DiscographyService {
+  private firestore: Firestore;
 
-    this.firestore = Firestore
   constructor(
     private readonly configService: ConfigService,
     private readonly loggerService: LoggerService,
@@ -18,19 +19,35 @@ export class DiscographyService {
     const credentialDecoded: string = buffer ? buffer.toString() : null;
     const credentialJson: any = JSON.parse(credentialDecoded);
 
-    this.client = new PubSub({
-      projectId: configService.get<string>('pubsub.projectId'),
-      credentials: credentialJson,
-    });
-
-    this.subscription = configService.get<string>('pubsub.subscriptionName');
-    this.timeout = parseInt(configService.get<string>('timeout'));
-
     this.firestore = new Firestore({
       projectId: configService.get<string>('pubsub.projectId'),
       credentials: credentialJson,
     });
   }
 
-  getDiscographyById = () => {};
+  getAllDiscography = async () => {
+    const discographyRef = this.firestore.collection('alonso-entrenamiento');
+    const allDiscography = await discographyRef.get();
+    const discographyArray: any[] = [];
+
+    allDiscography.forEach((doc) => {
+      discographyArray.push(doc.data());
+    });
+
+    return discographyArray;
+  };
+
+  getDiscographyById = async (id) => {
+    const discographyRef = this.firestore.collection('alonso-entrenamiento');
+    const allDiscography = await discographyRef.get();
+    const album: any[] = [];
+    allDiscography.forEach((doc) => {
+      console.log(doc.id, '=>', doc.data());
+      if (doc.id === id) {
+        album.push(doc.data());
+      }
+    });
+
+    return album;
+  };
 }
